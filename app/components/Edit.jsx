@@ -1,87 +1,72 @@
-"use client"
+"use client";
 import React, { useEffect, useState } from "react";
 import { Button, Form } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 import array from "./array";
-import { Link } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 function Edit() {
-    const [name, setname] = useState("");
-    const [age, setage] = useState("");
-    const [id, setid] = useState("");
+  const [name, setName] = useState("");
+  const [age, setAge] = useState("");
+  const [id, setId] = useState("");
 
-    let history = useNavigate();
+  const navigate = useNavigate();
 
-    let index = array.findIndex((e) => e.id === id);
+  useEffect(() => {
+    setName(localStorage.getItem("Name") || "");
+    setAge(localStorage.getItem("Age") || "");
+    setId(localStorage.getItem("Id") || "");
+  }, []);
 
-    const handelSubmit = (e) => {
-        e.preventDefault();
-        if (name == "" || age == "") {
-            alert("invalid input");
-            return;
-        }
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (name.trim() === "" || age.trim() === "" || isNaN(age) || +age <= 0) {
+      alert("Please provide valid inputs.");
+      return;
+    }
+    const index = array.findIndex((item) => item.id === id);
+    if (index === -1) {
+      alert("Item not found. Please try again.");
+      return;
+    }
 
-        let a = array[index];
-        a.Name = name;
-        a.Age = age;
-        history("/");
-    };
+    array[index].Name = name;
+    array[index].Age = age;
+    navigate("/");
+  };
 
-    useEffect(() => {
-        setname(localStorage.getItem("Name"));
-        setage(localStorage.getItem("Age"));
-        setid(localStorage.getItem("Id"));
-    }, []);
-
-    return (
-        <div>
-            <Form
-                className="d-grid gap-2"
-                style={{ margin: "5rem" }}
-            >
-                <Form.Group
-                    className="mb-3"
-                    controlId="formBasicEmail"
-                >
-                    <Form.Control
-                        value={name}
-                        onChange={(e) =>
-                            setname(e.target.value)
-                        }
-                        type="text"
-                        placeholder="Enter Name"
-                    />
-                </Form.Group>
-                <Form.Group
-                    className="mb-3"
-                    controlId="formBasicPassword"
-                >
-                    <Form.Control
-                        value={age}
-                        onChange={(e) =>
-                            setage(e.target.value)
-                        }
-                        type="number"
-                        placeholder="Age"
-                    />
-                </Form.Group>
-                <Button
-                    onClick={(e) => handelSubmit(e)}
-                    variant="primary"
-                    type="submit"
-                    size="lg"
-                >
-                    Update
-                </Button>
-                <Link className="d-grid gap-2" to="/">
-                    <Button variant="warning" size="lg">
-                        Home
-                    </Button>
-                </Link>
-            </Form>
-        </div>
-    )
+  return (
+    <div>
+      <Form className="d-grid gap-2" style={{ margin: "5rem" }} onSubmit={handleSubmit}>
+        <Form.Group className="mb-3" controlId="formName">
+          <Form.Control
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            type="text"
+            placeholder="Enter Name"
+            required
+          />
+        </Form.Group>
+        <Form.Group className="mb-3" controlId="formAge">
+          <Form.Control
+            value={age}
+            onChange={(e) => setAge(e.target.value)}
+            type="number"
+            placeholder="Enter Age"
+            required
+          />
+        </Form.Group>
+        <Button variant="primary" type="submit" size="lg">
+          Update
+        </Button>
+        <Link className="d-grid gap-2" to="/">
+          <Button variant="warning" size="lg">
+            Home
+          </Button>
+        </Link>
+      </Form>
+    </div>
+  );
 }
 
-export default Edit
+export default Edit;
